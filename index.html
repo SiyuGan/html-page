@@ -24,16 +24,15 @@
         </h1>
     </header>
     
-    <aside>
-        <h4>Total Medals By Country
-        <img src="https://a.espncdn.com/i/oly/medals/gold.svg">
-        <img src="https://a.espncdn.com/i/oly/medals/silver.svg">
-        <img src="https://a.espncdn.com/i/oly/medals/bronze.svg">
-        </h4>
-    </aside>
+    
     
 
     <body style="background-color:rgb(226, 226, 226);">
+        <aside>
+            <h4 style="color:darkred">
+                To see the metal counts for the past 3 Olympics, please click the national flag of the country you are interested in.
+            </h4>
+        </aside>
         <table class="objecttable">
             <thead>
             <tr><th>Country</th>
@@ -45,14 +44,24 @@
             <tbody></tbody>
         </table>
 
+
         <style>
-            .objecttable td {
+            .objecttable table,th,td {
                 border: 1px solid black;
+                padding: 8px;
+            }
+            .objecttable table {
+                width: 100%;
                 border-collapse: collapse;
-              padding: 8px;
             }
         </style>
-
+        <aside>
+            <h2>Total Medals By Country
+            <img src="https://a.espncdn.com/i/oly/medals/gold.svg">
+            <img src="https://a.espncdn.com/i/oly/medals/silver.svg">
+            <img src="https://a.espncdn.com/i/oly/medals/bronze.svg">
+            </h2>
+        </aside>
         <script src="https://d3js.org/d3.v4.js"></script>
         <!-- Create a div where the graph will take place -->
         
