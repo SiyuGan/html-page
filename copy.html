@@ -31,22 +31,21 @@
         <img src="https://a.espncdn.com/i/oly/medals/bronze.svg">
         </h4>
     </aside>
-    
+
 
     <body style="background-color:rgb(226, 226, 226);">
-        <script src="https://d3js.org/d3.v4.js"></script>
         
-        <div id="side_chart"> 
-
+        <div>
+        
         </div>
+
+        <script src="https://d3js.org/d3.v4.js"></script>
 
         <!-- Create a div where the graph will take place -->
         <div id="master_chart", style="background-color:white;">
         
         </div>
-        <div>
-            <img src="https://olympics.com/images/static/navigation-satellite/navigation-menu-logo.svg" alt="Olympics">
-        </div>
+
     </body>
 </section>
 </article>
@@ -104,10 +103,8 @@
                 .range([ 0, height ])
                 .domain(groups)
                 .padding(.1);
-                
             svg.append("g")
                 .call(d3.axisLeft(y))
-                
 
             // tooltip
             var tooltip = d3.select("#master_chart")
@@ -141,8 +138,7 @@
             }
 
 
-
-            // Flags
+            //Bars
             svg.append("g")
                 .selectAll("g")
                 //Enter in the stack data = loop key  = group 
@@ -155,15 +151,7 @@
                     .attr("xlink:href", function(d){
                             return ("https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/"+d+".png&w=56")
                         })
-                    .on("click", function(d){
-                        console.log(d)
-                    }); 
-                    
-     
-
-                    
-
-            // Enter in the stack data = loop key per key = group per group
+                // Enter in the stack data = loop key per key = group per group
             svg.append("g")
                 .selectAll("g")
                 .data(stackedData)
@@ -181,19 +169,8 @@
                         .attr("y", function(d) { return y(d.data.GROUP); })
                         .attr("width", function(d) {return x(d[1]) - x(d[0]); })
                         .attr("height", y.bandwidth());
-                
-                        
                     
             
-            // Add total number of metals
-            svg.append("g")
-                .selectAll("g")
-                .data(data)
-                .enter().append("svg:text")
-                .text(function(d) {return d.TOTAL;})
-                .attr("y", function(d) {return y(d.GROUP)+15;})
-                .attr("x", function(d) {return x(d.TOTAL);})
-                .style("text-anchor", "right");
 
 
             // Draw legend
@@ -215,63 +192,18 @@
             .attr("dy", ".35em")
             .style("text-anchor", "start")
             .text(function(d, i) { return subgroups[i]});
-       
+
+            
+   
+
+           
+                    
+
         });
                         
-    
-    // Generate interative side chart with historical data
-    d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/HistoricalOlympicMetals.csv", function (data) {
-        var years = data.slice(1)
-        console.log(years)
-        // set the dimensions and margins of the graph
-        var margin = {top: 30, right: 30, bottom: 70, left: 60},
-            width = 300 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
-
-        // append the svg object to the body of the page
-        var svg = d3.select("#side_chart")
-        .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-        // Initialize the X axis
-        var x = d3.scaleBand()
-            .domain(years)
-            .range([0, width])
-            .padding([0.2])
-        var xAxis = svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-
-        // Initialize the Y axis
-        var y = d3.scaleLinear()
-            .range([ height, 0]);
-        var yAxis = svg.append("g")
-            .attr("class", "myYaxis")
-        });
-
-        //Update function
-        // function update(country) {
-        
-        //     var u = svg.selectAll("g").data(data).filter(function(d) { return d === country })
-
-        //     u
-        //     .enter()
-        //     .append("rect")
-        //     .merge(u)
-        //     .transition()
-        //     .duration(1000)
-        //         .attr("x", function(d) { return x(years); })
-        //         .attr("y", function(d) { return y(d.value); })
-        //         .attr("width", x.bandwidth())
-        //         .attr("height", function(d) { return height - y(d.value); })
-        //         .attr("fill", "#69b3a2")
-        // }
-
-        // Initialize the plot with the first dataset
-        // update("USA")
     </script>
+<div>
+    <img src="https://olympics.com/images/static/navigation-satellite/navigation-menu-logo.svg" alt="Olympics">
+</div>
 
 </html>
