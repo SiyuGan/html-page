@@ -30,7 +30,7 @@
     <body style="background-color:rgb(226, 226, 226);">
         <aside>
             <h4 style="color:darkred">
-                To see the metal counts for the past 3 Olympics, please click the national flag of the country you are interested in.
+                To see the medal counts for the past 3 Olympics, please click the national flag of the country you are interested in.
             </h4>
         </aside>
         <table class="objecttable">
@@ -208,7 +208,7 @@
                     
                 
         
-        // Add total number of metals
+        // Add total number of medals
         svg.append("g")
             .selectAll("g")
             .data(data)
@@ -249,7 +249,7 @@
     function update(country) {
 
         // Parse the Data
-        d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/HistoricalOlympicMetals.csv", function(data2) {
+        d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/HistoricalOlympicMedals.csv", function(data2) {
             // var table = d3.select('body').append('table')
             
             var matrix = data2.filter(function(d) {return d.GROUP === country})
