@@ -34,19 +34,35 @@
     
 
     <body style="background-color:rgb(226, 226, 226);">
+        <table class="objecttable">
+            <thead>
+            <tr><th>Country</th>
+                <th>2016-Gold</th><th>2016-Silver</th><th>2016-Bronze</th><th>2016-Total medals</th>
+                <th>2012-Gold</th><th>2012-Silver</th><th>2012-Bronze</th><th>2012-Total medals</th>
+                <th>2008-Gold</th><th>2008-Silver</th><th>2008-Bronze</th><th>2008-Total medals</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <style>
+            .objecttable td {
+                border: 1px solid black;
+                border-collapse: collapse;
+              padding: 8px;
+            }
+        </style>
+
         <script src="https://d3js.org/d3.v4.js"></script>
-        
-        <div id="side_chart"> 
-
-        </div>
-
         <!-- Create a div where the graph will take place -->
-        <div id="master_chart", style="background-color:white;">
         
-        </div>
-        <div>
-            <img src="https://olympics.com/images/static/navigation-satellite/navigation-menu-logo.svg" alt="Olympics">
-        </div>
+        
+        <div id="master_chart", style="background-color:white;"></div>
+        
+        <!-- <aside>
+        
+        </aside> -->
+        
     </body>
 </section>
 </article>
@@ -73,205 +89,190 @@
                     
     // Parse the Data
 
-        d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/2020SummerOlympics.csv", function (data) {
-            // List of subgroups = header of the csv files = soil condition here
-            var subgroups = ["Gold", "Silver", "Bronze"]
-            
-            // List of groups = species here = value of the first column called group -> I show them on the X axis
-            var groups = d3.map(data, function(d){return(d.GROUP)}).keys()
-            console.log(groups)
-            // color palette = one color per subgroup
-            var color = d3.scaleOrdinal()
-                .domain(subgroups)
-                .range(['#FFD700','#C0C0C0','#CD7F32'])
+    d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/2020SummerOlympics.csv", function (data) {
+        // List of subgroups = header of the csv files = soil condition here
+        var subgroups = ["Gold", "Silver", "Bronze"]
+        
+        // List of groups = species here = value of the first column called group -> I show them on the X axis
+        var groups = d3.map(data, function(d){return(d.GROUP)}).keys()
+        console.log(groups)
+        // color palette = one color per subgroup
+        var color = d3.scaleOrdinal()
+            .domain(subgroups)
+            .range(['#FFD700','#C0C0C0','#CD7F32'])
 
-            //stack the data
-            var stackedData = d3.stack().keys(subgroups)(data)
-            
-            // Add X axis
-            var x = d3.scaleLinear()
-                .domain([0, 80])
-                .range([ 0, width]);
-            svg.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(d3.axisBottom(x))
-                .selectAll("text")
-                .attr("transform", "translate(-10,0)rotate(-45)")
-                .style("text-anchor", "end");
+        //stack the data
+        var stackedData = d3.stack().keys(subgroups)(data)
+        
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain([0, 80])
+            .range([ 0, width]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-45)")
+            .style("text-anchor", "end");
 
-            // Y axis
-            var y = d3.scaleBand()
-                .range([ 0, height ])
-                .domain(groups)
-                .padding(.1);
+        // Y axis
+        var y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(groups)
+            .padding(.1);
+            
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            
+
+        // tooltip
+        var tooltip = d3.select("#master_chart")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "white")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("border-radius", "5px")
+            .style("padding", "5px");
+
+        
+        var mouseover = function(d) {
+            var subgroupName = d3.select(this.parentNode).datum().key;
+            var subgroupValue = d.data[subgroupName];
+            tooltip
+                .html("Country: " + subgroupName + "<br>" + "Count: " + subgroupValue)
+                .style("opacity", 1)
+        }
+        
+        var mousemove = function(d) {
+            tooltip
+            .style("left", (d3.mouse(this)[0]+90) + "px") 
+            .style("top", (d3.mouse(this)[1]) + "px")
+        }
+        
+        var mouseleave = function(d) {
+            tooltip
+            .style("opacity", 0)
+        }
+
+
+
+        // Flags
+        svg.append("g")
+            .selectAll("g")
+            //Enter in the stack data = loop key  = group 
+            .data(groups)
+            .enter().append("svg:image")
+                .attr("x", -60)
+                .attr("y", function(d) { return y(d); })
+                .attr("width", 20)
+                .attr("height", 20)
+                .attr("xlink:href", function(d){
+                        return ("https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/"+d+".png&w=56")
+                    })
+                .on("click", function(d) { return update(d);}); 
                 
-            svg.append("g")
-                .call(d3.axisLeft(y))
+    
+
                 
 
-            // tooltip
-            var tooltip = d3.select("#master_chart")
-                .append("div")
-                .style("opacity", 0)
-                .attr("class", "tooltip")
-                .style("background-color", "white")
-                .style("border", "solid")
-                .style("border-width", "2px")
-                .style("border-radius", "5px")
-                .style("padding", "5px");
-
-            
-            var mouseover = function(d) {
-                var subgroupName = d3.select(this.parentNode).datum().key;
-                var subgroupValue = d.data[subgroupName];
-                tooltip
-                    .html("Country: " + subgroupName + "<br>" + "Count: " + subgroupValue)
-                    .style("opacity", 1)
-            }
-            
-            var mousemove = function(d) {
-                tooltip
-                .style("left", (d3.mouse(this)[0]+90) + "px") 
-                .style("top", (d3.mouse(this)[1]) + "px")
-            }
-            
-            var mouseleave = function(d) {
-                tooltip
-                .style("opacity", 0)
-            }
-
-
-
-            // Flags
-            svg.append("g")
-                .selectAll("g")
-                //Enter in the stack data = loop key  = group 
-                .data(groups)
-                .enter().append("svg:image")
-                    .attr("x", -60)
-                    .attr("y", function(d) { return y(d); })
-                    .attr("width", 20)
-                    .attr("height", 20)
-                    .attr("xlink:href", function(d){
-                            return ("https://a.espncdn.com/combiner/i?img=/i/teamlogos/countries/500/"+d+".png&w=56")
-                        })
-                    .on("click", function(d){
-                        console.log(d)
-                    }); 
-                    
-     
-
-                    
-
-            // Enter in the stack data = loop key per key = group per group
-            svg.append("g")
-                .selectAll("g")
-                .data(stackedData)
-                .enter().append("g")
-                    .attr("fill", function(d) { return color(d.key);}) 
-                    .selectAll("rect")
-                    // enter a second time = loop subgroup per subgroup to add all rectangles
-                    .data(function(d) { return d; })
-                    .enter().append("rect")
-                    .on("mouseover", mouseover)
-                    .on("mousemove", mousemove)    
-                    .on("mouseleave", mouseleave) .transition()
-                        .duration(2000)  
-                        .attr("x", function(d) { return x(d[0]); })
-                        .attr("y", function(d) { return y(d.data.GROUP); })
-                        .attr("width", function(d) {return x(d[1]) - x(d[0]); })
-                        .attr("height", y.bandwidth());
-                
-                        
-                    
-            
-            // Add total number of metals
-            svg.append("g")
-                .selectAll("g")
-                .data(data)
-                .enter().append("svg:text")
-                .text(function(d) {return d.TOTAL;})
-                .attr("y", function(d) {return y(d.GROUP)+15;})
-                .attr("x", function(d) {return x(d.TOTAL);})
-                .style("text-anchor", "right");
-
-
-            // Draw legend
-            var legend = svg.selectAll(".legend")
+        // Enter in the stack data = loop key per key = group per group
+        svg.append("g")
+            .selectAll("g")
             .data(stackedData)
             .enter().append("g")
-            .attr("class", "legend")
-            .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+                .attr("fill", function(d) { return color(d.key);}) 
+                .selectAll("rect")
+                // enter a second time = loop subgroup per subgroup to add all rectangles
+                .data(function(d) { return d; })
+                .enter().append("rect")
+                .on("mouseover", mouseover)
+                .on("mousemove", mousemove)    
+                .on("mouseleave", mouseleave) .transition()
+                    .duration(2000)  
+                    .attr("x", function(d) { return x(d[0]); })
+                    .attr("y", function(d) { return y(d.data.GROUP); })
+                    .attr("width", function(d) {return x(d[1]) - x(d[0]); })
+                    .attr("height", y.bandwidth());
             
-            legend.append("rect")
-            .attr("x", width - 30)
-            .attr("width",30)
-            .attr("height", 15)
-            .style("fill", function(d) { return color(d.key);})
-            
-            legend.append("text")
-            .attr("x", width + 5)
-            .attr("y", 9)
-            .attr("dy", ".35em")
-            .style("text-anchor", "start")
-            .text(function(d, i) { return subgroups[i]});
-       
-        });
-                        
+                    
+                
+        
+        // Add total number of metals
+        svg.append("g")
+            .selectAll("g")
+            .data(data)
+            .enter().append("svg:text")
+            .text(function(d) {return d.TOTAL;})
+            .attr("y", function(d) {return y(d.GROUP)+15;})
+            .attr("x", function(d) {return x(d.TOTAL);})
+            .style("text-anchor", "right");
+
+
+        // Draw legend
+        var legend = svg.selectAll(".legend")
+        .data(stackedData)
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(30," + i * 19 + ")"; });
+        
+        legend.append("rect")
+        .attr("x", width - 30)
+        .attr("width",30)
+        .attr("height", 15)
+        .style("fill", function(d) { return color(d.key);})
+        
+        legend.append("text")
+        .attr("x", width + 5)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "start")
+        .text(function(d, i) { return subgroups[i]});
+    
+    });
+                    
     
     // Generate interative side chart with historical data
-    d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/HistoricalOlympicMetals.csv", function (data) {
-        var years = data.slice(1)
-        console.log(years)
-        // set the dimensions and margins of the graph
-        var margin = {top: 30, right: 30, bottom: 70, left: 60},
-            width = 300 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
 
-        // append the svg object to the body of the page
-        var svg = d3.select("#side_chart")
-        .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
 
-        // Initialize the X axis
-        var x = d3.scaleBand()
-            .domain(years)
-            .range([0, width])
-            .padding([0.2])
-        var xAxis = svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
+    // A function that create / update the plot for a given variable:
+    function update(country) {
 
-        // Initialize the Y axis
-        var y = d3.scaleLinear()
-            .range([ height, 0]);
-        var yAxis = svg.append("g")
-            .attr("class", "myYaxis")
-        });
+        // Parse the Data
+        d3.csv("https://raw.githubusercontent.com/SiyuGan/test-web-page/main/HistoricalOlympicMetals.csv", function(data2) {
+            // var table = d3.select('body').append('table')
+            
+            var matrix = data2.filter(function(d) {return d.GROUP === country})
+            
 
-        //Update function
-        // function update(country) {
-        
-        //     var u = svg.selectAll("g").data(data).filter(function(d) { return d === country })
+            var tbody = d3.selectAll("tbody")
+            // var tr = d3.select(".objecttable tbody")
+            //     .selectAll("tr")
+            //     .data(matrix)
+            //     .enter().append("tr");
 
-        //     u
-        //     .enter()
-        //     .append("rect")
-        //     .merge(u)
-        //     .transition()
-        //     .duration(1000)
-        //         .attr("x", function(d) { return x(years); })
-        //         .attr("y", function(d) { return y(d.value); })
-        //         .attr("width", x.bandwidth())
-        //         .attr("height", function(d) { return height - y(d.value); })
-        //         .attr("fill", "#69b3a2")
-        // }
+            // var td = tr.selectAll("td")
+            //     .data(function(d, i) { return Object.values(d); })
+            //     .enter().append("td")
+            //     .text(function(d) { return d; });
+            
+            // tbody.remove()
+            
+            tbody.html("").selectAll("tr")
+                .data(matrix)
+                .enter().append("tr")
+                .selectAll("td")
+                .data(function(d, i) { 
+                    console.log(d)
+                    return Object.values(d); })
+                .enter().append("td")
+                .text(function(d) { return d;});
 
-        // Initialize the plot with the first dataset
-        // update("USA")
+            // console.log(d3.csvFormat(matrix ))
+        })};
+    //Initialize the plot with the first dataset
+    update("USA")
     </script>
-
+<div><img src="https://olympics.com/images/static/navigation-satellite/navigation-menu-logo.svg" alt="Olympics"></div>
 </html>
